@@ -1,3 +1,21 @@
+# Invoice Generator
+
+Application to input the invoide details and generate invoice pdf
+
+## Description
+
+- Vue 3 app with taildwind css
+- Reusable components text area, input fields and buttons
+
+## Work in progrss
+
+- Use reusable input fields to create a line items grid view
+
+## TODO
+
+- [ ] Import invoice json
+- [ ] Bulk import invoice json
+
 # Vue 3 + Vite
 
 This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
