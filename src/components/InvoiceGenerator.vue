@@ -3,6 +3,8 @@ import { computed, reactive } from "vue";
 import CustomText from "./CustomText.vue";
 import CustomButton from "./CustomButton.vue";
 import CustomInput from "./CustomInput.vue";
+import LineItems from "./LineItems.vue";
+import WithLabel from "./WithLabel.vue";
 
 const invoice = reactive({
   logo: "",
@@ -42,13 +44,32 @@ const invoice = reactive({
     isPercentage: false,
     value: 0,
   },
-  shipping: 0,
+  shipping: {
+    isUsed: false,
+    value: 0,
+  },
   paid: 0,
 });
 
 const isInvalid = (x) => x === null || x?.trim().length === 0;
 const isSenderInvalid = computed(() => isInvalid(invoice.sender));
 const isBuyerInvalid = computed(() => isInvalid(invoice.buyer));
+
+const updateLineItem = (value, index) => (invoice.items[index] = { ...value });
+
+const subtotal = computed(() =>
+  invoice.items.reduce((prev, acc) => prev + acc.rate * acc.quantity, 0)
+);
+
+const total = computed(
+  () =>
+    subtotal.value -
+    invoice.discount.value +
+    invoice.tax.value +
+    invoice.shipping.value
+);
+
+const balance = computed(() => total.value - invoice.paid);
 </script>
 <template>
   <main class="h-screen w-screen bg-slate-50">
@@ -56,7 +77,7 @@ const isBuyerInvalid = computed(() => isInvalid(invoice.buyer));
       Invoice Generator
     </nav>
     <aside
-      class="complement-height border-l w-4/12 bg-slate-200 float-right py-12 print:hidden"
+      class="complement-height border-l w-3/12 bg-slate-200 float-right py-12 print:hidden"
     >
       <CustomButton large :disabled="isSenderInvalid || isBuyerInvalid">
         Download
@@ -101,116 +122,47 @@ const isBuyerInvalid = computed(() => isInvalid(invoice.buyer));
         </div>
 
         <div class="flex flex-col justify-end self-center">
-          <CustomInput v-model="invoice.number" label="Invoice Number:" />
-          <CustomInput v-model="invoice.ponumber" label="PO Number:" />
-          <CustomInput
-            v-model="invoice.date"
-            label="Date:"
-            :input-type="date"
-          />
-          <CustomInput
-            v-model="invoice.duedate"
-            label="Due Date:"
-            :input-type="date"
-          />
+          <WithLabel label="Invoice Number:">
+            <CustomInput v-model="invoice.number" label="Invoice Number:" />
+          </WithLabel>
+
+          <WithLabel label="PO Number:">
+            <CustomInput v-model="invoice.ponumber" label="PO Number:" />
+          </WithLabel>
+
+          <WithLabel label="Date:">
+            <CustomInput
+              v-model="invoice.date"
+              label="Date:"
+              input-type="date"
+            />
+          </WithLabel>
+
+          <WithLabel label="Due Date:">
+            <CustomInput
+              v-model="invoice.duedate"
+              label="Due Date:"
+              input-type="date"
+            />
+          </WithLabel>
         </div>
       </div>
 
-      <div class="bg-slate-50 mx-auto px-1 pb-1 h-min w-full">
-        <table class="border-collapse table-auto w-10/12 mx-auto">
-          <thead>
-            <tr>
-              <th
-                class="border-b border-slate-600 bg-slate-300 font-semibold pl-8 pt-0 text-slate-500 text-left"
-              >
-                Description
-              </th>
-              <th
-                class="border-b border-slate-600 bg-slate-300 font-semibold pl-8 pt-0 text-slate-500 text-left"
-              >
-                Rate
-              </th>
-              <th
-                class="border-b border-slate-600 bg-slate-300 font-semibold pl-8 pt-0 text-slate-500 text-left"
-              >
-                Quantity
-              </th>
-              <th
-                class="border-b border-slate-600 bg-slate-300 font-semibold pl-8 pt-0 text-slate-500 text-left"
-              >
-                Amount
-              </th>
-            </tr>
-          </thead>
-          <tbody class="bg-slate-200">
-            <tr>
-              <td
-                class="border-b border-slate-700 pl-8 text-slate-500 dark:text-slate-400 text-left"
-              >
-                Desc 1
-              </td>
-              <td
-                class="border-b border-slate-700 pl-8 text-slate-500 dark:text-slate-400 text-left"
-              >
-                12
-              </td>
-              <td
-                class="border-b border-slate-700 pl-8 text-slate-500 dark:text-slate-400 text-left"
-              >
-                10
-              </td>
-              <td
-                class="border-b border-slate-700 pl-8 text-slate-500 dark:text-slate-400 text-left"
-              >
-                120
-              </td>
-            </tr>
-            <tr>
-              <td
-                class="border-b border-slate-700 pl-8 text-slate-500 dark:text-slate-400 text-left"
-              >
-                Desc 2
-              </td>
-              <td
-                class="border-b border-slate-700 pl-8 text-slate-500 dark:text-slate-400 text-left"
-              >
-                24
-              </td>
-              <td
-                class="border-b border-slate-700 pl-8 text-slate-500 dark:text-slate-400 text-left"
-              >
-                3
-              </td>
-              <td
-                class="border-b border-slate-700 pl-8 text-slate-500 dark:text-slate-400 text-left"
-              >
-                72
-              </td>
-            </tr>
-            <tr>
-              <td
-                class="border-b border-slate-700 pl-8 text-slate-500 dark:text-slate-400 text-left"
-              >
-                Desc 3
-              </td>
-              <td
-                class="border-b border-slate-700 pl-8 text-slate-500 dark:text-slate-400 text-left"
-              >
-                8
-              </td>
-              <td
-                class="border-b border-slate-700 pl-8 text-slate-500 dark:text-slate-400 text-left"
-              >
-                5
-              </td>
-              <td
-                class="border-b border-slate-700 pl-8 text-slate-500 dark:text-slate-400 text-left"
-              >
-                40
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="bg-slate-50 mx-auto px-1 pb-1 h-min w-8/12">
+        <div class="flex">
+          <div class="p-0.5 m-0.5 flex-auto w-52">Description</div>
+          <div class="p-0.5 m-0.5 flex-none w-32">Quantity</div>
+          <div class="p-0.5 m-0.5 flex-none w-32">Rate</div>
+          <div class="p-0.5 m-0.5 flex-none w-32">Amount</div>
+        </div>
+        <template v-for="(item, index) in invoice.items" :key="index">
+          <LineItems
+            :item="item"
+            :index="index"
+            @update-item="updateLineItem"
+          />
+        </template>
+
         <CustomButton class="mt-1 float-left ml-1"> Add Item </CustomButton>
       </div>
 
@@ -227,27 +179,43 @@ const isBuyerInvalid = computed(() => isInvalid(invoice.buyer));
             <label for="subtotal" class="mr-2 text-lg font-semibold"
               >Subtotal:</label
             >
-            <div class="w-4/12 text-right">$</div>
+            <div class="w-4/12 text-right">$ {{ subtotal }}</div>
           </div>
-          <CustomInput v-model="invoice.discount.value" label="Discount:" />
+          <WithLabel label="Discount:">
+            <CustomInput
+              v-model.number="invoice.discount.value"
+              label="Discount:"
+            />
+          </WithLabel>
+          <WithLabel label="Tax:">
+            <CustomInput v-model.number="invoice.tax.value" label="Tax:" />
+          </WithLabel>
 
-          <CustomInput v-model="invoice.tax.value" label="Tax:" />
-
-          <CustomInput v-model="invoice.shipping.value" label="Shipping:" />
-
+          <WithLabel label="Shipping:">
+            <CustomInput
+              v-model.number="invoice.shipping.value"
+              label="Shipping:"
+              currency
+            />
+          </WithLabel>
           <div class="grandtotal flex flex-row items-end justify-end my-1">
             <label for="grandtotal" class="mr-2 text-lg font-semibold"
               >Total:</label
             >
-            <div class="w-4/12 text-right">$</div>
+            <div class="w-4/12 text-right">$ {{ total }}</div>
           </div>
-          <CustomInput v-model="invoice.paid" label="Amount Paid:" />
-
+          <WithLabel label="Amount Paid:">
+            <CustomInput
+              v-model.number="invoice.paid"
+              label="Amount Paid:"
+              currency
+            />
+          </WithLabel>
           <div class="balance-due-row flex flex-row items-end justify-end my-1">
             <label for="balance-due" class="mr-2 text-lg font-semibold"
               >Balance Due:</label
             >
-            <div class="w-4/12 text-right">$</div>
+            <div class="w-4/12 text-right">$ {{ balance }}</div>
           </div>
         </div>
       </div>
