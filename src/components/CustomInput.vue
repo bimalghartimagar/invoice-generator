@@ -4,12 +4,13 @@ import CustomToggleSwitch from "./CustomToggleSwitch.vue";
 
 const props = defineProps({
   modelValue: {
-    type: Number,
-    required: true,
+    type: [Number, String],
+    default: undefined,
+    required: false,
   },
   label: {
     type: String,
-    required: true,
+    default: "",
   },
   currency: {
     type: Boolean,
@@ -22,33 +23,43 @@ const props = defineProps({
   },
   inputType: {
     type: String,
-    required: true,
     default: "number",
+  },
+  value: {
+    type: [Number, String],
+    default: "",
+    required: false,
+  },
+  inputClass: {
+    type: String,
+    default: "",
   },
 });
 defineEmits(["update:modelValue"]);
 
 const idFor = computed(() => props.label.toLowerCase().replace(/ /g, "-"));
 </script>
+<script>
+// used to stop inherting attrs to fragment warning
+export default {
+  inheritAttrs: false,
+};
+</script>
 <template>
-  <div class="flex flex-row items-end justify-end mt-1 text-right">
-    <label class="mr-2" :for="idFor">{{ label }}</label>
-    <div class="border border-slate-500 rounded-md p-0.5 flex">
-      <div v-if="currency" class="mx-2">$</div>
-      <input
-        :id="idFor"
-        class="outline-none"
-        :value="modelValue"
-        :type="inputType"
-        @input="$emit('update:modelValue', $event.target.value)"
-      />
-      <div v-if="toggle" class="ml-2">%</div>
-      <CustomToggleSwitch v-if="toggle" />
-    </div>
-    <div v-if="isUsed" class="flex items-center ml-1 cursor-pointer pb-1">
-      X
-    </div>
+  <div class="border border-slate-500 rounded-md p-0.5 flex">
+    <div v-if="currency" class="mx-2">$</div>
+    <input
+      :id="idFor"
+      class="outline-none w-full"
+      :class="inputClass"
+      :value="modelValue == undefined ? value : modelValue"
+      :type="inputType"
+      @input="$emit('update:modelValue', $event.target.value)"
+    />
+    <div v-if="toggle" class="ml-2">%</div>
+    <CustomToggleSwitch v-if="toggle" />
   </div>
+  <div v-if="isUsed" class="flex items-center ml-1 cursor-pointer pb-1">X</div>
 </template>
 
 <style>
