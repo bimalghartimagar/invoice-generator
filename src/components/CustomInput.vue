@@ -34,8 +34,11 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  disabled: {
+    type: Boolean,
+  },
 });
-defineEmits(["update:modelValue"]);
+defineEmits(["update:modelValue", "close"]);
 
 const idFor = computed(() => props.label.toLowerCase().replace(/ /g, "-"));
 </script>
@@ -46,7 +49,7 @@ export default {
 };
 </script>
 <template>
-  <div class="border border-slate-500 rounded-md p-0.5 flex">
+  <div class="border border-slate-500 rounded p-0.5 flex">
     <div v-if="currency" class="mx-2">$</div>
     <input
       :id="idFor"
@@ -54,12 +57,20 @@ export default {
       :class="inputClass"
       :value="modelValue == undefined ? value : modelValue"
       :type="inputType"
+      :placeholder="label"
+      :disabled="disabled"
       @input="$emit('update:modelValue', $event.target.value)"
     />
     <div v-if="toggle" class="ml-2">%</div>
     <CustomToggleSwitch v-if="toggle" />
   </div>
-  <div v-if="isUsed" class="flex items-center ml-1 cursor-pointer pb-1">X</div>
+  <div
+    v-if="isUsed"
+    class="flex items-center ml-1 cursor-pointer pb-1"
+    @click="$emit('close')"
+  >
+    x
+  </div>
 </template>
 
 <style>
