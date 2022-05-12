@@ -1,6 +1,6 @@
 # Invoice Generator
 
-Application to input the invoide details and generate invoice pdf
+Application to input the invoice details and can be used to generate invoice pdf using browser print function
 
 ## Description
 
@@ -9,7 +9,8 @@ Application to input the invoide details and generate invoice pdf
 
 ## Work in progrss
 
-- Use reusable input fields to create a line items grid view
+- Applying Discount, Tax and Shipping to amount
+- Use percentage or amount on discount and tax field
 
 ## TODO
 
