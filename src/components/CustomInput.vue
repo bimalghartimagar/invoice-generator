@@ -1,6 +1,5 @@
 <script setup>
 import { computed } from "@vue/reactivity";
-import CustomToggleSwitch from "./CustomToggleSwitch.vue";
 
 const props = defineProps({
   modelValue: {
@@ -50,19 +49,22 @@ export default {
 </script>
 <template>
   <div class="border border-slate-500 rounded p-0.5 flex">
-    <div v-if="currency" class="mx-2">$</div>
+    <div v-show="currency" class="mx-2">$</div>
     <input
       :id="idFor"
       class="outline-none w-full"
-      :class="inputClass"
+      :class="{
+        inputClass: true,
+        'text-right': !currency,
+      }"
       :value="modelValue == undefined ? value : modelValue"
       :type="inputType"
       :placeholder="label"
       :disabled="disabled"
       @input="$emit('update:modelValue', $event.target.value)"
     />
-    <div v-if="toggle" class="ml-2">%</div>
-    <CustomToggleSwitch v-if="toggle" />
+    <div v-show="toggle && !currency" class="ml-2">%</div>
+    <slot></slot>
   </div>
   <div
     v-if="isUsed"

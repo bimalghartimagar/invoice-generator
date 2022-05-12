@@ -7,12 +7,13 @@ defineProps({
 </script>
 <template>
   <button
+    class="w-fit"
     :class="{
       'bg-gray-400 pointer-events-none text-gray-500': disabled,
       'bg-green-500 hover:bg-green-600 text-white': !disabled,
       'px-2 py-1': !large && !small,
       'px-4 py-2': large && !small,
-      'px-1 py-0.5': small && !large,
+      'px-1 py-0.5 text-xs': small && !large,
     }"
     :disabled="disabled"
   >
