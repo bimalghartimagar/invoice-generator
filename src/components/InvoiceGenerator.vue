@@ -5,6 +5,7 @@ import CustomButton from "./CustomButton.vue";
 import CustomInput from "./CustomInput.vue";
 import LineItems from "./LineItems.vue";
 import WithLabel from "./WithLabel.vue";
+import CustomToggleSwitch from "./CustomToggleSwitch.vue";
 
 const invoice = reactive({
   logo: "",
@@ -19,28 +20,28 @@ const invoice = reactive({
     {
       id: "item1",
       description: "item 1",
-      rate: 12.5,
+      rate: 20,
       quantity: 3,
     },
     {
       id: "item2",
       description: "item 2",
-      rate: 11,
-      quantity: 5,
+      rate: 5,
+      quantity: 2,
     },
     {
       id: "item3",
       description: "item 3",
-      rate: 35,
-      quantity: 4,
+      rate: 15,
+      quantity: 2,
     },
   ],
   notes: "First month payment",
   terms: "Payment should be done within a week",
   discount: {
-    isUsed: false,
-    isPercentage: false,
-    value: 0,
+    isUsed: true,
+    isPercentage: true,
+    value: 10,
   },
   tax: {
     isUsed: false,
@@ -64,13 +65,52 @@ const subtotal = computed(() =>
   invoice.items.reduce((prev, acc) => prev + acc.rate * acc.quantity, 0)
 );
 
-const total = computed(
-  () =>
-    subtotal.value -
-    invoice.discount.value +
-    invoice.tax.value +
-    invoice.shipping.value
-);
+/**
+ * Compute total value after applying discount
+ * based on `discount` percentage or value and `subtotal` value
+ */
+const afterDiscount = computed(() => {
+  if (invoice.discount.isUsed) {
+    if (invoice.discount.isPercentage) {
+      return subtotal.value - (subtotal.value * invoice.discount.value) / 100;
+    } else {
+      return subtotal.value - invoice.discount.value;
+    }
+  }
+  return subtotal.value;
+});
+
+/**
+ * Compute total value after applying tax
+ * based on `tax` percentage or value and `afterDiscount` value
+ */
+const afterTax = computed(() => {
+  if (invoice.tax.isUsed) {
+    if (invoice.tax.isPercentage) {
+      return (
+        afterDiscount.value + (afterDiscount.value * invoice.tax.value) / 100
+      );
+    } else {
+      return afterDiscount.value + invoice.tax.value;
+    }
+  }
+  return afterDiscount.value;
+});
+
+/**
+ * Compute total value after applying shipping
+ * based on `shipping` value and `afterTax` value
+ */
+const afterShipping = computed(() => {
+  if (invoice.shipping.isUsed) {
+    return afterTax.value + invoice.shipping.value;
+  }
+  return afterTax.value;
+});
+
+const total = computed(() => {
+  return afterShipping.value;
+});
 
 const balance = computed(() => total.value - invoice.paid);
 
@@ -200,23 +240,80 @@ const removeLineItem = (index) => {
             >
             <div class="w-4/12 text-right">$ {{ subtotal }}</div>
           </div>
-          <WithLabel label="Discount">
-            <CustomInput
-              v-model.number="invoice.discount.value"
-              label="Discount"
-            />
-          </WithLabel>
-          <WithLabel label="Tax">
-            <CustomInput v-model.number="invoice.tax.value" label="Tax" />
-          </WithLabel>
 
-          <WithLabel label="Shipping">
-            <CustomInput
-              v-model.number="invoice.shipping.value"
-              label="Shipping"
-              currency
-            />
-          </WithLabel>
+          <template v-if="invoice.discount.isUsed">
+            <WithLabel label="Discount">
+              <CustomInput
+                v-model.number="invoice.discount.value"
+                is-used
+                label="Discount"
+                toggle
+                :currency="!invoice.discount.isPercentage"
+                @close="invoice.discount.isUsed = false"
+              >
+                <CustomToggleSwitch
+                  v-model="invoice.discount.isPercentage"
+                  :for-value="'invoice-discount'"
+                />
+              </CustomInput>
+            </WithLabel>
+          </template>
+          <template v-else>
+            <CustomButton
+              class="my-1 self-end"
+              small
+              @click="invoice.discount.isUsed = true"
+              >Add Discount</CustomButton
+            >
+          </template>
+
+          <template v-if="invoice.tax.isUsed">
+            <WithLabel label="Tax">
+              <CustomInput
+                v-model.number="invoice.tax.value"
+                is-used
+                label="Tax"
+                toggle
+                :currency="!invoice.tax.isPercentage"
+                @close="invoice.tax.isUsed = false"
+              >
+                <CustomToggleSwitch
+                  v-model="invoice.tax.isPercentage"
+                  :for-value="'invoice-tax'"
+                />
+              </CustomInput>
+            </WithLabel>
+          </template>
+          <template v-else>
+            <CustomButton
+              class="my-1 self-end"
+              small
+              @click="invoice.tax.isUsed = true"
+              >Add Tax</CustomButton
+            >
+          </template>
+
+          <template v-if="invoice.shipping.isUsed">
+            <WithLabel label="Shipping">
+              <CustomInput
+                v-model.number="invoice.shipping.value"
+                label="Shipping"
+                is-used
+                currency
+                @close="invoice.shipping.isUsed = false"
+              >
+              </CustomInput>
+            </WithLabel>
+          </template>
+          <template v-else>
+            <CustomButton
+              class="my-1 self-end"
+              small
+              @click="invoice.shipping.isUsed = true"
+              >Add Shipping</CustomButton
+            >
+          </template>
+
           <div class="grandtotal flex flex-row items-end justify-end my-1">
             <label for="grandtotal" class="mr-2 text-lg font-semibold"
               >Total:</label
