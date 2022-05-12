@@ -17,17 +17,20 @@ const invoice = reactive({
   buyer: "Buyer details",
   items: [
     {
+      id: "item1",
       description: "item 1",
       rate: 12.5,
       quantity: 3,
     },
     {
-      description: "item 1",
+      id: "item2",
+      description: "item 2",
       rate: 11,
       quantity: 5,
     },
     {
-      description: "item 1",
+      id: "item3",
+      description: "item 3",
       rate: 35,
       quantity: 4,
     },
@@ -70,6 +73,19 @@ const total = computed(
 );
 
 const balance = computed(() => total.value - invoice.paid);
+
+const addLineItem = () => {
+  invoice.items.push({
+    id: `item${invoice.items.length}`,
+    description: "",
+    rate: 0,
+    quantity: 0,
+  });
+};
+
+const removeLineItem = (index) => {
+  invoice.items.splice(index, 1);
+};
 </script>
 <template>
   <main class="h-screen w-screen bg-slate-50">
@@ -107,7 +123,7 @@ const balance = computed(() => total.value - invoice.paid);
           <CustomText
             v-model="invoice.sender"
             class="text-sm"
-            label="Sender:"
+            label="Sender"
             :is-required="true"
             :is-invalid="isSenderInvalid"
           />
@@ -115,33 +131,33 @@ const balance = computed(() => total.value - invoice.paid);
           <CustomText
             v-model="invoice.buyer"
             class="text-sm"
-            label="Buyer:"
+            label="Buyer"
             :is-required="true"
             :is-invalid="isBuyerInvalid"
           />
         </div>
 
         <div class="flex flex-col justify-end self-center">
-          <WithLabel label="Invoice Number:">
-            <CustomInput v-model="invoice.number" label="Invoice Number:" />
+          <WithLabel label="Invoice Number">
+            <CustomInput v-model="invoice.number" label="Invoice Number" />
           </WithLabel>
 
-          <WithLabel label="PO Number:">
-            <CustomInput v-model="invoice.ponumber" label="PO Number:" />
+          <WithLabel label="PO Number">
+            <CustomInput v-model="invoice.ponumber" label="PO Number" />
           </WithLabel>
 
-          <WithLabel label="Date:">
+          <WithLabel label="Date">
             <CustomInput
               v-model="invoice.date"
-              label="Date:"
+              label="Date"
               input-type="date"
             />
           </WithLabel>
 
-          <WithLabel label="Due Date:">
+          <WithLabel label="Due Date">
             <CustomInput
               v-model="invoice.duedate"
-              label="Due Date:"
+              label="Due Date"
               input-type="date"
             />
           </WithLabel>
@@ -149,29 +165,32 @@ const balance = computed(() => total.value - invoice.paid);
       </div>
 
       <div class="bg-slate-50 mx-auto px-1 pb-1 h-min w-8/12">
-        <div class="flex">
+        <div class="flex bg-slate-200 rounded">
           <div class="p-0.5 m-0.5 flex-auto w-52">Description</div>
           <div class="p-0.5 m-0.5 flex-none w-32">Quantity</div>
           <div class="p-0.5 m-0.5 flex-none w-32">Rate</div>
           <div class="p-0.5 m-0.5 flex-none w-32">Amount</div>
         </div>
-        <template v-for="(item, index) in invoice.items" :key="index">
+        <template v-for="(item, index) in invoice.items" :key="item.id">
           <LineItems
             :item="item"
             :index="index"
             @update-item="updateLineItem"
+            @close="removeLineItem"
           />
         </template>
 
-        <CustomButton class="mt-1 float-left ml-1"> Add Item </CustomButton>
+        <CustomButton class="mt-1 float-left ml-1" @click="addLineItem">
+          Add Item
+        </CustomButton>
       </div>
 
       <div
         class="complement-height bg-slate-50 grid grid-cols-2 gap-0 py-1 px-4 h-fit"
       >
         <div class="">
-          <CustomText v-model="invoice.notes" class="text-sm" label="Notes:" />
-          <CustomText v-model="invoice.terms" class="text-sm" label="Terms:" />
+          <CustomText v-model="invoice.notes" class="text-sm" label="Notes" />
+          <CustomText v-model="invoice.terms" class="text-sm" label="Terms" />
         </div>
 
         <div class="flex flex-col justify-end">
@@ -181,20 +200,20 @@ const balance = computed(() => total.value - invoice.paid);
             >
             <div class="w-4/12 text-right">$ {{ subtotal }}</div>
           </div>
-          <WithLabel label="Discount:">
+          <WithLabel label="Discount">
             <CustomInput
               v-model.number="invoice.discount.value"
-              label="Discount:"
+              label="Discount"
             />
           </WithLabel>
-          <WithLabel label="Tax:">
-            <CustomInput v-model.number="invoice.tax.value" label="Tax:" />
+          <WithLabel label="Tax">
+            <CustomInput v-model.number="invoice.tax.value" label="Tax" />
           </WithLabel>
 
-          <WithLabel label="Shipping:">
+          <WithLabel label="Shipping">
             <CustomInput
               v-model.number="invoice.shipping.value"
-              label="Shipping:"
+              label="Shipping"
               currency
             />
           </WithLabel>
@@ -204,10 +223,10 @@ const balance = computed(() => total.value - invoice.paid);
             >
             <div class="w-4/12 text-right">$ {{ total }}</div>
           </div>
-          <WithLabel label="Amount Paid:">
+          <WithLabel label="Amount Paid">
             <CustomInput
               v-model.number="invoice.paid"
-              label="Amount Paid:"
+              label="Amount Paid"
               currency
             />
           </WithLabel>
