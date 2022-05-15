@@ -36,5 +36,6 @@ defineEmits(["update:modelValue"]);
       :class="isRequired && isInvalid ? 'border-red-600' : 'border-slate-500'"
       @input="$emit('update:modelValue', $event.target.value)"
     />
+    <div class="hidden print:inline-block text-left">{{ modelValue }}</div>
   </div>
 </template>

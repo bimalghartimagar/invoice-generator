@@ -38,7 +38,7 @@ const removeItem = () => {
     <div class="m-0.5 flex-none w-32">
       <CustomInput v-model="lineItem.rate" currency />
     </div>
-    <div class="m-0.5 flex-none w-32 flex">
+    <div class="m-0.5 flex-none w-32 flex relative">
       <CustomInput
         v-model="amount"
         currency

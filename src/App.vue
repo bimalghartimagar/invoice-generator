@@ -14,4 +14,8 @@ import InvoiceGenerator from "./components/InvoiceGenerator.vue";
   text-align: center;
   color: #2c3e50;
 }
+textarea,
+input {
+  @apply print:hidden;
+}
 </style>

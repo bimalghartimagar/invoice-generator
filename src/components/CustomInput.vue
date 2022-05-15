@@ -31,7 +31,7 @@ const props = defineProps({
   },
   inputClass: {
     type: String,
-    default: "",
+    default: "w-full",
   },
   disabled: {
     type: Boolean,
@@ -40,6 +40,12 @@ const props = defineProps({
 defineEmits(["update:modelValue", "close"]);
 
 const idFor = computed(() => props.label.toLowerCase().replace(/ /g, "-"));
+
+const printValue = computed(() => {
+  return `${props.currency ? "$" : ""}${
+    props.modelValue == undefined ? props.value : props.modelValue
+  }${props.toggle && !props.currency ? "%" : ""}`;
+});
 </script>
 <script>
 // used to stop inherting attrs to fragment warning
@@ -48,14 +54,14 @@ export default {
 };
 </script>
 <template>
-  <div class="border border-slate-500 rounded p-0.5 flex">
+  <div class="border border-slate-500 rounded p-0.5 flex print:hidden">
     <div v-show="currency" class="mx-2">$</div>
     <input
       :id="idFor"
-      class="outline-none w-full"
+      class="outline-none"
       :class="{
-        inputClass: true,
-        'text-right': !currency,
+        [inputClass]: true,
+        'text-right': !currency && inputType !== 'text',
       }"
       :value="modelValue == undefined ? value : modelValue"
       :type="inputType"
@@ -68,11 +74,12 @@ export default {
   </div>
   <div
     v-if="isUsed"
-    class="flex items-center ml-1 cursor-pointer pb-1"
+    class="flex items-center ml-1 cursor-pointer pb-1 absolute -right-3 top-1 print:hidden"
     @click="$emit('close')"
   >
     x
   </div>
+  <div class="hidden print:block">{{ printValue }}</div>
 </template>
 
 <style>

@@ -19,29 +19,17 @@ const invoice = reactive({
   items: [
     {
       id: "item1",
-      description: "item 1",
+      description: "Item 1",
       rate: 20,
-      quantity: 3,
-    },
-    {
-      id: "item2",
-      description: "item 2",
-      rate: 5,
-      quantity: 2,
-    },
-    {
-      id: "item3",
-      description: "item 3",
-      rate: 15,
-      quantity: 2,
+      quantity: 5,
     },
   ],
   notes: "First month payment",
   terms: "Payment should be done within a week",
   discount: {
-    isUsed: true,
-    isPercentage: true,
-    value: 10,
+    isUsed: false,
+    isPercentage: false,
+    value: 0,
   },
   tax: {
     isUsed: false,
@@ -114,6 +102,9 @@ const total = computed(() => {
 
 const balance = computed(() => total.value - invoice.paid);
 
+/**
+ * Add a line item to the invoice line items array
+ */
 const addLineItem = () => {
   invoice.items.push({
     id: `item${invoice.items.length}`,
@@ -123,30 +114,38 @@ const addLineItem = () => {
   });
 };
 
+/**
+ * Remove items from invoice items array
+ * @param {*} index index of item to remove
+ */
 const removeLineItem = (index) => {
   invoice.items.splice(index, 1);
 };
 </script>
 <template>
   <main class="h-screen w-screen bg-slate-50">
-    <nav class="h-20 bg-slate-600 text-white text-5xl pt-3 print:hidden">
+    <nav class="h-12 bg-slate-600 text-white text-2xl pt-3 print:hidden">
       Invoice Generator
     </nav>
     <aside
+      v-if="false"
       class="complement-height border-l w-3/12 bg-slate-200 float-right py-12 print:hidden"
     >
-      <CustomButton large :disabled="isSenderInvalid || isBuyerInvalid">
+      <CustomButton
+        large
+        :disabled="isSenderInvalid || isBuyerInvalid"
+        @click="window.print()"
+      >
         Download
       </CustomButton>
     </aside>
-    <div class="h-12 bg-slate-50 w-8/12 print:w-full">
-      <input
-        v-model="invoice.name"
-        type="text"
-        class="h-12 text-5xl border border-slate-100 hover:cursor-pointer text-center"
-      />
-    </div>
-    <section class="flex flex-col w-8/12 print:w-full">
+
+    <section
+      class="m-4 flex flex-col w-8/12 print:w-full border border-gray-400 shadow-md shadow-slate-400"
+    >
+      <div class="mx-2 my-2 h-12 grid-cols-12 bg-slate-50 print:w-full">
+        <CustomInput v-model="invoice.name" input-type="text" />
+      </div>
       <div
         class="complement-height bg-slate-50 grid grid-cols-2 gap-0 py-1 px-4 h-fit"
       >
@@ -183,7 +182,11 @@ const removeLineItem = (index) => {
           </WithLabel>
 
           <WithLabel label="PO Number">
-            <CustomInput v-model="invoice.ponumber" label="PO Number" />
+            <CustomInput
+              v-model="invoice.ponumber"
+              label="PO Number"
+              input-type="text"
+            />
           </WithLabel>
 
           <WithLabel label="Date">
@@ -341,6 +344,6 @@ const removeLineItem = (index) => {
 
 <style>
 .complement-height {
-  height: calc(100vh - theme("height.20"));
+  height: calc(100vh - theme("height.12"));
 }
 </style>
