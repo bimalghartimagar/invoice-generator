@@ -54,19 +54,18 @@ export default {
 };
 </script>
 <template>
-  <div class="border border-slate-500 rounded p-0.5 flex print:hidden">
+  <div class="border border-slate-500 rounded p-0.5 flex print:hidden w-full">
     <div v-show="currency" class="mx-2">$</div>
     <input
       :id="idFor"
       class="outline-none"
       :class="{
         [inputClass]: true,
-        'text-right': !currency && inputType !== 'text',
+        'text-right':
+          !currency && $attrs['type'] !== 'text' && $attrs['type'] !== 'date',
       }"
       :value="modelValue == undefined ? value : modelValue"
-      :type="inputType"
-      :placeholder="label"
-      :disabled="disabled"
+      v-bind="$attrs"
       @input="$emit('update:modelValue', $event.target.value)"
     />
     <div v-show="toggle && !currency" class="ml-2">%</div>

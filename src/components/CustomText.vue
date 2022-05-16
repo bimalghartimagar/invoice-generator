@@ -1,3 +1,8 @@
+<script>
+export default {
+  inheritAttrs: false,
+};
+</script>
 <script setup>
 defineProps({
   label: {
@@ -30,12 +35,21 @@ defineEmits(["update:modelValue"]);
       id="details"
       :value="modelValue"
       name=""
-      cols="30"
-      rows="2"
+      cols="40"
+      rows="3"
       class="border rounded-md p-0.5"
       :class="isRequired && isInvalid ? 'border-red-600' : 'border-slate-500'"
+      v-bind="$attrs"
       @input="$emit('update:modelValue', $event.target.value)"
     />
-    <div class="hidden print:inline-block text-left">{{ modelValue }}</div>
+    <div class="hidden print:inline-block text-left px-4 mx-1">
+      {{ modelValue }}
+    </div>
   </div>
 </template>
+
+<style scoped>
+textarea {
+  resize: both;
+}
+</style>
