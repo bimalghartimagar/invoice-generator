@@ -13,7 +13,7 @@ const idFor = computed(() => props.label.toLowerCase().replace(/ /g, "-"));
   <div class="flex flex-row items-end justify-end mt-1 text-right">
     <label class="mr-2" :for="idFor">{{ label }}:</label>
     <div
-      class="w-52 flex flex-row justify-end items-end relative print:min-w-min"
+      class="w-32 flex flex-row justify-end items-end relative print:min-w-min print:w-24"
     >
       <slot></slot>
     </div>

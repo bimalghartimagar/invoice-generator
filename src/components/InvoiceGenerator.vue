@@ -1,5 +1,5 @@
 <script setup>
-import { computed, reactive } from "vue";
+import { computed, reactive, watch, ref } from "vue";
 import CustomText from "./CustomText.vue";
 import CustomButton from "./CustomButton.vue";
 import CustomInput from "./CustomInput.vue";
@@ -14,8 +14,8 @@ const invoice = reactive({
   ponumber: "12AC",
   date: "2022-01-01",
   duedate: "2022-01-07",
-  sender: "Vendor Sender details",
-  buyer: "Buyer details",
+  sender: "",
+  buyer: "",
   items: [
     {
       id: "item1",
@@ -24,8 +24,8 @@ const invoice = reactive({
       quantity: 5,
     },
   ],
-  notes: "First month payment",
-  terms: "Payment should be done within a week",
+  notes: "",
+  terms: "",
   discount: {
     isUsed: false,
     isPercentage: false,
@@ -44,8 +44,22 @@ const invoice = reactive({
 });
 
 const isInvalid = (x) => x === null || x?.trim().length === 0;
-const isSenderInvalid = computed(() => isInvalid(invoice.sender));
-const isBuyerInvalid = computed(() => isInvalid(invoice.buyer));
+const isSenderInvalid = ref(false);
+const isBuyerInvalid = ref(false);
+
+watch(
+  () => invoice.sender,
+  (newVal) => {
+    isSenderInvalid.value = isInvalid(newVal);
+  }
+);
+
+watch(
+  () => invoice.buyer,
+  (newVal) => {
+    isBuyerInvalid.value = isInvalid(newVal);
+  }
+);
 
 const updateLineItem = (value, index) => (invoice.items[index] = { ...value });
 
@@ -121,6 +135,11 @@ const addLineItem = () => {
 const removeLineItem = (index) => {
   invoice.items.splice(index, 1);
 };
+
+/**
+ * Print function to trigger browser print
+ */
+const print = () => window.print();
 </script>
 <template>
   <main class="h-screen w-screen bg-slate-50">
@@ -141,10 +160,14 @@ const removeLineItem = (index) => {
     </aside>
 
     <section
-      class="m-4 flex flex-col w-8/12 print:w-full border border-gray-400 shadow-md shadow-slate-400"
+      class="m-4 p-1 flex flex-col mx-auto w-8/12 print:w-full rounded border border-gray-400 shadow-md shadow-slate-400 print:mx-auto print:shadow-none"
     >
-      <div class="mx-2 my-2 h-12 grid-cols-12 bg-slate-50 print:w-full">
-        <CustomInput v-model="invoice.name" input-type="text" />
+      <div class="my-2 h-12 grid-cols-12 bg-slate-50 print:w-full px-4">
+        <CustomInput
+          v-model="invoice.name"
+          type="text"
+          input-class="text-3xl w-full text-center"
+        />
       </div>
       <div
         class="complement-height bg-slate-50 grid grid-cols-2 gap-0 py-1 px-4 h-fit"
@@ -161,6 +184,7 @@ const removeLineItem = (index) => {
 
           <CustomText
             v-model="invoice.sender"
+            placeholder="Sender Details"
             class="text-sm"
             label="Sender"
             :is-required="true"
@@ -169,6 +193,7 @@ const removeLineItem = (index) => {
 
           <CustomText
             v-model="invoice.buyer"
+            placeholder="Buyer Detail"
             class="text-sm"
             label="Buyer"
             :is-required="true"
@@ -185,55 +210,49 @@ const removeLineItem = (index) => {
             <CustomInput
               v-model="invoice.ponumber"
               label="PO Number"
-              input-type="text"
+              type="text"
             />
           </WithLabel>
 
           <WithLabel label="Date">
-            <CustomInput
-              v-model="invoice.date"
-              label="Date"
-              input-type="date"
-            />
+            <CustomInput v-model="invoice.date" label="Date" type="date" />
           </WithLabel>
 
           <WithLabel label="Due Date">
             <CustomInput
               v-model="invoice.duedate"
               label="Due Date"
-              input-type="date"
+              type="date"
             />
           </WithLabel>
         </div>
       </div>
 
-      <div class="bg-slate-50 mx-auto px-1 pb-1 h-min w-8/12">
-        <div class="flex bg-slate-200 rounded">
-          <div class="p-0.5 m-0.5 flex-auto w-52">Description</div>
-          <div class="p-0.5 m-0.5 flex-none w-32">Quantity</div>
-          <div class="p-0.5 m-0.5 flex-none w-32">Rate</div>
-          <div class="p-0.5 m-0.5 flex-none w-32">Amount</div>
-        </div>
-        <template v-for="(item, index) in invoice.items" :key="item.id">
-          <LineItems
-            :item="item"
-            :index="index"
-            @update-item="updateLineItem"
-            @close="removeLineItem"
-          />
-        </template>
-
-        <CustomButton class="mt-1 float-left ml-1" @click="addLineItem">
-          Add Item
-        </CustomButton>
+      <div class="px-4">
+        <LineItems
+          class="mt-4"
+          :items="invoice.items"
+          @update-item="updateLineItem"
+          @close="removeLineItem"
+          @add-item="addLineItem"
+        />
       </div>
-
       <div
         class="complement-height bg-slate-50 grid grid-cols-2 gap-0 py-1 px-4 h-fit"
       >
         <div class="">
-          <CustomText v-model="invoice.notes" class="text-sm" label="Notes" />
-          <CustomText v-model="invoice.terms" class="text-sm" label="Terms" />
+          <CustomText
+            v-model="invoice.notes"
+            placeholder="Notes regarding invoice"
+            class="text-sm"
+            label="Notes"
+          />
+          <CustomText
+            v-model="invoice.terms"
+            placeholder="Terms regarding invoice"
+            class="text-sm"
+            label="Terms"
+          />
         </div>
 
         <div class="flex flex-col justify-end">
@@ -241,7 +260,7 @@ const removeLineItem = (index) => {
             <label for="subtotal" class="mr-2 text-lg font-semibold"
               >Subtotal:</label
             >
-            <div class="w-4/12 text-right">$ {{ subtotal }}</div>
+            <div class="w-32 text-right print:w-24">$ {{ subtotal }}</div>
           </div>
 
           <template v-if="invoice.discount.isUsed">
@@ -321,7 +340,7 @@ const removeLineItem = (index) => {
             <label for="grandtotal" class="mr-2 text-lg font-semibold"
               >Total:</label
             >
-            <div class="w-4/12 text-right">$ {{ total }}</div>
+            <div class="w-32 text-right print:w-24">$ {{ total }}</div>
           </div>
           <WithLabel label="Amount Paid">
             <CustomInput
@@ -334,9 +353,19 @@ const removeLineItem = (index) => {
             <label for="balance-due" class="mr-2 text-lg font-semibold"
               >Balance Due:</label
             >
-            <div class="w-4/12 text-right">$ {{ balance }}</div>
+            <div class="w-32 text-right print:w-24">$ {{ balance }}</div>
           </div>
         </div>
+      </div>
+      <div>
+        <CustomButton
+          class="w-full my-3"
+          large
+          :disabled="isSenderInvalid || isBuyerInvalid"
+          @click="print"
+        >
+          Print
+        </CustomButton>
       </div>
     </section>
   </main>
