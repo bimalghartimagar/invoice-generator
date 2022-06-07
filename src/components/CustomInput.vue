@@ -32,10 +32,7 @@ const props = defineProps({
   inputClass: {
     type: String,
     default: "w-full",
-  },
-  disabled: {
-    type: Boolean,
-  },
+  }
 });
 defineEmits(["update:modelValue", "close"]);
 
