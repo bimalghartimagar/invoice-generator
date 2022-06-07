@@ -160,7 +160,7 @@ const print = () => window.print();
     </aside>
 
     <section
-      class="m-4 p-1 flex flex-col mx-auto w-8/12 print:w-full rounded border border-gray-400 shadow-md shadow-slate-400 print:mx-auto print:shadow-none"
+      class="my-4 p-1 flex flex-col mx-auto w-11/12 xl:w-9/12 print:w-full rounded border border-gray-400 shadow-md shadow-slate-400 print:mx-auto print:shadow-none"
     >
       <div class="my-2 h-12 grid-cols-12 bg-slate-50 print:w-full px-4">
         <CustomInput
@@ -170,7 +170,7 @@ const print = () => window.print();
         />
       </div>
       <div
-        class="complement-height bg-slate-50 grid grid-cols-2 gap-0 py-1 px-4 h-fit"
+        class="complement-height bg-slate-50 grid lg:grid-cols-2 gap-0 py-1 px-4 h-fit"
       >
         <div>
           <div class="logo">
@@ -201,7 +201,7 @@ const print = () => window.print();
           />
         </div>
 
-        <div class="flex flex-col justify-end self-center">
+        <div class="flex flex-col lg:justify-end self-center">
           <WithLabel label="Invoice Number">
             <CustomInput v-model="invoice.number" label="Invoice Number" />
           </WithLabel>
@@ -228,7 +228,7 @@ const print = () => window.print();
         </div>
       </div>
 
-      <div class="px-4">
+      <div class="bg-slate-50 mx-auto w-11/12 lg:w-8/12">
         <LineItems
           class="mt-4"
           :items="invoice.items"
@@ -237,8 +237,9 @@ const print = () => window.print();
           @add-item="addLineItem"
         />
       </div>
+
       <div
-        class="complement-height bg-slate-50 grid grid-cols-2 gap-0 py-1 px-4 h-fit"
+        class="complement-height bg-slate-50 grid lg:grid-cols-2 gap-0 py-1 px-4 h-fit"
       >
         <div class="">
           <CustomText
@@ -255,7 +256,7 @@ const print = () => window.print();
           />
         </div>
 
-        <div class="flex flex-col justify-end">
+        <div class="flex flex-col justify-end -order-1 lg:order-1">
           <div class="subtotal flex flex-row items-end justify-end my-1">
             <label for="subtotal" class="mr-2 text-lg font-semibold"
               >Subtotal:</label

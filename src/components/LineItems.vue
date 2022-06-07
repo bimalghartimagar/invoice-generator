@@ -1,11 +1,12 @@
 <template>
-  <div class="bg-slate-50 mx-auto h-min w-8/12">
-    <div class="flex bg-slate-200 rounded">
-      <div class="p-0.5 m-0.5 flex-auto w-52">Description</div>
-      <div class="p-0.5 m-0.5 flex-none w-32">Quantity</div>
-      <div class="p-0.5 m-0.5 flex-none w-32">Rate</div>
-      <div class="p-0.5 m-0.5 flex-none w-32">Amount</div>
+  <div class="">
+    <div class="lg:flex bg-slate-200 rounded hidden">
+      <div class="p-0.5 m-0.5 flex-auto w-full lg:w-52">Description</div>
+      <div class="p-0.5 m-0.5 flex-none w-10 lg:w-32">Quantity</div>
+      <div class="p-0.5 m-0.5 flex-none w-10 lg:w-32">Rate</div>
+      <div class="p-0.5 m-0.5 flex-none w-10 lg:w-32">Amount</div>
     </div>
+    <div class="lg:hidden bg-slate-200 rounded">Line Items</div>
     <template v-for="(item, index) in items" :key="item.id">
       <LineItem
         :item="item"

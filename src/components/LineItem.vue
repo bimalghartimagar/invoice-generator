@@ -25,21 +25,22 @@ const removeItem = () => {
 };
 </script>
 <template>
-  <div class="flex">
-    <div class="m-0.5 flex-auto w-52">
+  <div class="flex flex-wrap border border-slate-400 lg:border-0 lg:p-0 my-3 py-2 px-3 rounded">
+    <div class="m-0.5 lg:flex-auto w-full lg:w-52">
       <CustomInput
         v-model="lineItem.description"
         type="text"
         label="Description"
       />
     </div>
-    <div class="m-0.5 flex-none w-32">
-      <CustomInput v-model="lineItem.quantity" />
+    <div class="m-0.5 flex-1 lg:flex-none lg:w-32 mt-2 lg:mt-auto">
+      <CustomInput v-model="lineItem.quantity" placeholder="Quantity" />
     </div>
-    <div class="m-0.5 flex-none w-32">
-      <CustomInput v-model="lineItem.rate" currency />
+    <div class="flex-1 grow-0 self-center lg:hidden  mt-2 lg:mt-auto">x</div>
+    <div class="m-0.5 flex-1 lg:flex-none lg:w-32  mt-2 lg:mt-auto">
+      <CustomInput v-model="lineItem.rate" currency placeholder="Rate" />
     </div>
-    <div class="m-0.5 flex-none w-32 flex relative">
+    <div class="m-0.5 flex-1 lg:flex-none lg:w-32 lg:flex relative hidden">
       <CustomInput
         v-model="amount"
         currency
@@ -48,5 +49,7 @@ const removeItem = () => {
         @close="removeItem"
       />
     </div>
+    <div class=" mt-2 lg:mt-auto flex-1 self-center lg:hidden">Amount: {{ amount }} <span v-show="!hideClose" class="float-right cursor-pointer px-2 rounded-full border border-black shadow-lg" @click="removeItem">x</span></div>
+    
   </div>
 </template>
