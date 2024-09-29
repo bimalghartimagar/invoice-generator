@@ -6,135 +6,23 @@ import CustomInput from "./CustomInput.vue";
 import LineItems from "./LineItems.vue";
 import WithLabel from "./WithLabel.vue";
 import CustomToggleSwitch from "./CustomToggleSwitch.vue";
+import { useInvoice } from "../composables/invoice";
 
-const invoice = reactive({
-  logo: "",
-  name: "XYZ IT",
-  number: "1",
-  ponumber: "12AC",
-  date: "2022-01-01",
-  duedate: "2022-01-07",
-  sender: "",
-  buyer: "",
-  items: [
-    {
-      id: "item1",
-      description: "Item 1",
-      rate: 20,
-      quantity: 5,
-    },
-  ],
-  notes: "",
-  terms: "",
-  discount: {
-    isUsed: false,
-    isPercentage: false,
-    value: 0,
-  },
-  tax: {
-    isUsed: false,
-    isPercentage: false,
-    value: 0,
-  },
-  shipping: {
-    isUsed: false,
-    value: 0,
-  },
-  paid: 0,
-});
+const {
+  invoice,
+  subtotal,
+  total,
+  balance,
+
+  isSenderInvalid,
+  isBuyerInvalid,
+
+  addLineItem,
+  updateLineItem,
+  removeLineItem
+} = useInvoice();
 
 const isInvalid = (x) => x === null || x?.trim().length === 0;
-const isSenderInvalid = ref(false);
-const isBuyerInvalid = ref(false);
-
-watch(
-  () => invoice.sender,
-  (newVal) => {
-    isSenderInvalid.value = isInvalid(newVal);
-  }
-);
-
-watch(
-  () => invoice.buyer,
-  (newVal) => {
-    isBuyerInvalid.value = isInvalid(newVal);
-  }
-);
-
-const updateLineItem = (value, index) => (invoice.items[index] = { ...value });
-
-const subtotal = computed(() =>
-  invoice.items.reduce((prev, acc) => prev + acc.rate * acc.quantity, 0)
-);
-
-/**
- * Compute total value after applying discount
- * based on `discount` percentage or value and `subtotal` value
- */
-const afterDiscount = computed(() => {
-  if (invoice.discount.isUsed) {
-    if (invoice.discount.isPercentage) {
-      return subtotal.value - (subtotal.value * invoice.discount.value) / 100;
-    } else {
-      return subtotal.value - invoice.discount.value;
-    }
-  }
-  return subtotal.value;
-});
-
-/**
- * Compute total value after applying tax
- * based on `tax` percentage or value and `afterDiscount` value
- */
-const afterTax = computed(() => {
-  if (invoice.tax.isUsed) {
-    if (invoice.tax.isPercentage) {
-      return (
-        afterDiscount.value + (afterDiscount.value * invoice.tax.value) / 100
-      );
-    } else {
-      return afterDiscount.value + invoice.tax.value;
-    }
-  }
-  return afterDiscount.value;
-});
-
-/**
- * Compute total value after applying shipping
- * based on `shipping` value and `afterTax` value
- */
-const afterShipping = computed(() => {
-  if (invoice.shipping.isUsed) {
-    return afterTax.value + invoice.shipping.value;
-  }
-  return afterTax.value;
-});
-
-const total = computed(() => {
-  return afterShipping.value;
-});
-
-const balance = computed(() => total.value - invoice.paid);
-
-/**
- * Add a line item to the invoice line items array
- */
-const addLineItem = () => {
-  invoice.items.push({
-    id: `item${invoice.items.length}`,
-    description: "",
-    rate: 0,
-    quantity: 0,
-  });
-};
-
-/**
- * Remove items from invoice items array
- * @param {*} index index of item to remove
- */
-const removeLineItem = (index) => {
-  invoice.items.splice(index, 1);
-};
 
 /**
  * Print function to trigger browser print
@@ -166,12 +54,11 @@ const print = () => window.print();
         <CustomInput
           v-model="invoice.name"
           type="text"
-          input-class="text-3xl w-full text-center"
+          class="text-3xl w-full text-center"
+          placeholder="Enter Company Name"
         />
       </div>
-      <div
-        class="complement-height bg-slate-50 grid lg:grid-cols-2 gap-0 py-1 px-4 h-fit"
-      >
+      <div class="complement-height bg-slate-50 grid lg:grid-cols-2 gap-0 py-1 px-4 h-fit">
         <div>
           <div class="logo">
             <div
@@ -179,7 +66,11 @@ const print = () => window.print();
             >
               LOGO
             </div>
-            <img src="" alt="" class="logo" />
+            <img
+              src=""
+              alt=""
+              class="logo"
+            />
           </div>
 
           <CustomText
@@ -203,7 +94,10 @@ const print = () => window.print();
 
         <div class="flex flex-col lg:justify-end self-center">
           <WithLabel label="Invoice Number">
-            <CustomInput v-model="invoice.number" label="Invoice Number" />
+            <CustomInput
+              v-model="invoice.number"
+              label="Invoice Number"
+            />
           </WithLabel>
 
           <WithLabel label="PO Number">
@@ -215,7 +109,11 @@ const print = () => window.print();
           </WithLabel>
 
           <WithLabel label="Date">
-            <CustomInput v-model="invoice.date" label="Date" type="date" />
+            <CustomInput
+              v-model="invoice.date"
+              label="Date"
+              type="date"
+            />
           </WithLabel>
 
           <WithLabel label="Due Date">
@@ -238,9 +136,7 @@ const print = () => window.print();
         />
       </div>
 
-      <div
-        class="complement-height bg-slate-50 grid lg:grid-cols-2 gap-0 py-1 px-4 h-fit"
-      >
+      <div class="complement-height bg-slate-50 grid lg:grid-cols-2 gap-0 py-1 px-4 h-fit">
         <div class="">
           <CustomText
             v-model="invoice.notes"
@@ -258,9 +154,10 @@ const print = () => window.print();
 
         <div class="flex flex-col justify-end -order-1 lg:order-1">
           <div class="subtotal flex flex-row items-end justify-end my-1">
-            <label for="subtotal" class="mr-2 text-lg font-semibold"
-              >Subtotal:</label
-            >
+            <label
+              for="subtotal"
+              class="mr-2 text-lg font-semibold"
+            >Subtotal:</label>
             <div class="w-32 text-right print:w-24">$ {{ subtotal }}</div>
           </div>
 
@@ -286,8 +183,7 @@ const print = () => window.print();
               class="my-1 self-end"
               small
               @click="invoice.discount.isUsed = true"
-              >Add Discount</CustomButton
-            >
+            >Add Discount</CustomButton>
           </template>
 
           <template v-if="invoice.tax.isUsed">
@@ -312,8 +208,7 @@ const print = () => window.print();
               class="my-1 self-end"
               small
               @click="invoice.tax.isUsed = true"
-              >Add Tax</CustomButton
-            >
+            >Add Tax</CustomButton>
           </template>
 
           <template v-if="invoice.shipping.isUsed">
@@ -333,14 +228,14 @@ const print = () => window.print();
               class="my-1 self-end"
               small
               @click="invoice.shipping.isUsed = true"
-              >Add Shipping</CustomButton
-            >
+            >Add Shipping</CustomButton>
           </template>
 
           <div class="grandtotal flex flex-row items-end justify-end my-1">
-            <label for="grandtotal" class="mr-2 text-lg font-semibold"
-              >Total:</label
-            >
+            <label
+              for="grandtotal"
+              class="mr-2 text-lg font-semibold"
+            >Total:</label>
             <div class="w-32 text-right print:w-24">$ {{ total }}</div>
           </div>
           <WithLabel label="Amount Paid">
@@ -351,9 +246,10 @@ const print = () => window.print();
             />
           </WithLabel>
           <div class="balance-due-row flex flex-row items-end justify-end my-1">
-            <label for="balance-due" class="mr-2 text-lg font-semibold"
-              >Balance Due:</label
-            >
+            <label
+              for="balance-due"
+              class="mr-2 text-lg font-semibold"
+            >Balance Due:</label>
             <div class="w-32 text-right print:w-24">$ {{ balance }}</div>
           </div>
         </div>

@@ -36,7 +36,7 @@ defineEmits(["update:modelValue"]);
       :value="modelValue"
       name=""
       cols="40"
-      rows="3"
+      rows="2"
       class="border rounded-md p-0.5 w-full lg:w-auto"
       :class="isRequired && isInvalid ? 'border-red-600' : 'border-slate-500'"
       v-bind="$attrs"

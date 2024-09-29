@@ -25,7 +25,7 @@ const removeItem = () => {
 };
 </script>
 <template>
-  <div class="flex flex-wrap border border-slate-400 lg:border-0 lg:p-0 my-3 py-2 px-3 rounded">
+  <div class="flex flex-wrap border border-slate-400 lg:border-0 lg:p-0 my-1 py-1 px-3 rounded">
     <div class="m-0.5 lg:flex-auto w-full lg:w-52">
       <CustomInput
         v-model="lineItem.description"

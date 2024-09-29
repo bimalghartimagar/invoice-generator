@@ -45,7 +45,7 @@ const printValue = computed(() => {
 });
 </script>
 <script>
-// used to stop inherting attrs to fragment warning
+// stop inherting attrs for ignoring fragment warning
 export default {
   inheritAttrs: false,
 };
@@ -70,7 +70,7 @@ export default {
   </div>
   <div
     v-if="isUsed"
-    class="flex items-center ml-1 cursor-pointer pb-1 absolute -right-3 top-1 print:hidden"
+    class="flex items-center ml-1 cursor-pointer pb-1 absolute -right-3 top-1 print:hidden text-sm"
     @click="$emit('close')"
   >
     x
