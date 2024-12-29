@@ -1,9 +1,7 @@
-<script>
-export default {
-  inheritAttrs: false,
-};
-</script>
-<script setup>
+<script setup lang="ts">
+defineOptions({
+  inheritAttrs: false
+})
 defineProps({
   label: {
     type: String,

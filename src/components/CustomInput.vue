@@ -1,5 +1,10 @@
-<script setup>
+<script setup lang="ts">
 import { computed } from "@vue/reactivity";
+
+// stop inherting attrs for ignoring fragment warning
+defineOptions({
+  inheritAttrs: false
+})
 
 const props = defineProps({
   modelValue: {
@@ -44,12 +49,7 @@ const printValue = computed(() => {
   }${props.toggle && !props.currency ? "%" : ""}`;
 });
 </script>
-<script>
-// stop inherting attrs for ignoring fragment warning
-export default {
-  inheritAttrs: false,
-};
-</script>
+
 <template>
   <div class="border border-slate-500 rounded p-0.5 flex print:hidden w-full">
     <div v-show="currency" class="mx-2">$</div>
@@ -70,7 +70,7 @@ export default {
   </div>
   <div
     v-if="isUsed"
-    class="flex items-center ml-1 cursor-pointer pb-1 absolute -right-3 top-1 print:hidden text-sm"
+    class="flex items-center ml-1 cursor-pointer pb-1 print:hidden text-sm"
     @click="$emit('close')"
   >
     x

@@ -1,19 +1,23 @@
-<script setup>
-import InvoiceGenerator from "./components/InvoiceGenerator.vue";
+<script setup lang="ts">
+import "./index.css";
+import Layout from './components/shared/Layout.vue';
 </script>
 
 <template>
-  <InvoiceGenerator />
+  <Layout>
+    <RouterView />
+  </Layout>
 </template>
 
 <style>
+
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: Lato,sAvenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
 }
+
 textarea,
 input {
   @apply print:hidden;
