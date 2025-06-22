@@ -8,7 +8,7 @@
             LOGO
         </label>
         <img
-            v-if="fileUrl"
+            v-if="fileUrl || props.logo"
             :src="fileUrl"
             alt=""
             class="logo w-auto h-40"
@@ -27,12 +27,17 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import invoiceService from '../services/invoiceService';
+
+const props = defineProps({ invoiceId: Number, logo: String });
+
 
 const file = ref(null);
 const fileInputRef = ref();
-const fileUrl = ref('');
+const fileUrl = ref(import.meta.env.VITE_BACKEND_URL+props.logo);
 function createObjectUrl(event) {
     file.value = event.target.files[0];
+    invoiceService.uploadLogo(props.invoiceId, file.value)
     if (file.value) {
         fileUrl.value = window.URL.createObjectURL(file.value);
     } else {

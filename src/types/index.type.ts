@@ -15,13 +15,13 @@ export enum Status {
 export interface Invoice {
     logo: string,
     name: string,
-    number: number,
-    ponumber: string,
+    number: string,
+    poNumber: string,
     date: string,
-    duedate: string,
+    duedate?: string,
     sender: string,
     buyer: string,
-    items: InvoiceItem[];
+    invoiceItems: InvoiceItem[];
     notes: string,
     terms: string,
     discount: {
@@ -38,7 +38,7 @@ export interface Invoice {
         isUsed: boolean,
         value: number,
     },
-    total: number,
+    totalAmount: number,
     paid: number,
 
     sentToContact: boolean,
@@ -46,7 +46,6 @@ export interface Invoice {
 }
 
 export interface InvoiceStore {
-    currentInvoiceNumber: number;
-    invoices: { [invoiceNumber: string]: Invoice };
+    currentInvoiceNumber: string;
 }
 export default {}

@@ -3,6 +3,7 @@ import { format } from "date-fns";
 
 import useState from './useInvoiceStorage';
 import { Invoice, InvoiceItem, Status } from '../types/index.type';
+import invoiceService from '../services/invoiceService';
 
 const state = useState();
 const date = new Date();
@@ -12,12 +13,12 @@ export function useInvoice(invoiceId?: number) {
         logo: "",
         name: "",
         number: state.storage.value.currentInvoiceNumber,
-        ponumber: "",
+        poNumber: "",
         date: format(date, "yyyy-MM-dd"),
-        duedate: "",
+        duedate: null,
         sender: "",
         buyer: "",
-        items: [
+        invoiceItems: [
             {
                 id: 1,
                 description: "",
@@ -48,26 +49,26 @@ export function useInvoice(invoiceId?: number) {
     });
 
     // If the invoice is already in the storage, use it
-    if(invoiceId){
+    if (invoiceId) {
         const invoiceToUse = state.storage.value.invoices[invoiceId];
-        if(invoiceToUse) Object.assign(invoice, invoiceToUse);
+        if (invoiceToUse) Object.assign(invoice, invoiceToUse);
     }
 
     const isSenderInvalid = ref(false);
     const isBuyerInvalid = ref(false);
-    
+
     const isInvalid = (x: string | null) => x === null || x?.trim().length === 0;
 
     function resetInvoice() {
         invoice.logo = "";
         invoice.name = "";
         invoice.number = state.storage.value.currentInvoiceNumber;
-        invoice.ponumber = "";
+        invoice.poNumber = "";
         invoice.date = "";
         invoice.duedate = "";
         invoice.sender = "";
         invoice.buyer = "";
-        invoice.items =
+        invoice.invoiceItems =
             [{
                 id: 1,
                 description: "0",
@@ -108,7 +109,7 @@ export function useInvoice(invoiceId?: number) {
     );
 
     const subtotal = computed(() =>
-        invoice.items.reduce((prev, acc) => prev + acc.rate * acc.quantity, 0)
+        invoice.invoiceItems.reduce((prev, acc) => prev + acc.rate * acc.quantity, 0)
     );
 
     /**
@@ -159,13 +160,13 @@ export function useInvoice(invoiceId?: number) {
     });
 
     const balance = computed(() => total.value - invoice.paid);
-    
+
     /**
      * update invoice total property
-     */ 
+     */
     watch(
         balance,
-        (newVal) => invoice.total = newVal
+        (newVal) => invoice.totalAmount = newVal
     )
 
     /**
@@ -180,8 +181,8 @@ export function useInvoice(invoiceId?: number) {
      * Add a line item to the invoice line items array
      */
     const addLineItem = () => {
-        invoice.items.push({
-            id: invoice.items.length + 1,
+        invoice.invoiceItems.push({
+            id: invoice.invoiceItems.length + 1,
             description: "",
             rate: 0,
             quantity: 0,
@@ -192,8 +193,16 @@ export function useInvoice(invoiceId?: number) {
      * Remove items from invoice items array
      * @param {*} index index of item to remove
      */
-    const removeLineItem = (index) => {
-        invoice.items.splice(index, 1);
+    const removeLineItem = ({index, invoiceId, lineId}) => {
+        invoiceService.deleteLineItem(invoiceId, lineId);
+        invoice.invoiceItems.splice(index, 1);
+    };
+
+    /**
+     * 
+     */
+    const setInvoice = (invoiceData: Invoice) => {
+        Object.assign(invoice, invoiceData);
     };
 
     return {
@@ -214,7 +223,7 @@ export function useInvoice(invoiceId?: number) {
         addLineItem,
         updateLineItem,
         removeLineItem,
-        resetInvoice
+        resetInvoice,
+        setInvoice
     }
 }
-

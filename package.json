@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@vueuse/core": "^10.10.0",
+    "axios": "^1.9.0",
     "date-fns": "^4.1.0",
     "primeicons": "^7.0.0",
     "typescript": "^5.4.5",
@@ -31,6 +32,6 @@
     "vitest": "^0.10.5"
   },
   "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu":  "4.6.1"
+    "@rollup/rollup-linux-x64-gnu": "4.6.1"
   }
 }

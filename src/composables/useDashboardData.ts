@@ -7,7 +7,7 @@ export function useDashboardData() {
 
     const totalInvoiceAmount = computed(() => {
         const invoices = state.storage.value.invoices;
-        const amount = Object.keys(invoices).reduce((acc, item) => acc + invoices[item].total, 0);
+        const amount = Object.keys(invoices).reduce((acc, item) => acc + invoices[item].totalAmount, 0);
         return amount.toFixed(2)
     })
 
@@ -15,7 +15,7 @@ export function useDashboardData() {
         const invoices = state.storage.value.invoices;
         const amount = Object.keys(invoices).reduce((acc, item) => {
             if (invoices[item].status === Status.Paid) {
-                return acc + invoices[item].total
+                return acc + invoices[item].totalAmount
             }
             return acc;
         }, 0);
@@ -26,7 +26,7 @@ export function useDashboardData() {
         const invoices = state.storage.value.invoices;
         const amount = Object.keys(invoices).reduce((acc, item) => {
             if (invoices[item].status === Status.Overdue) {
-                return acc + invoices[item].total
+                return acc + invoices[item].totalAmount
             }
             return acc;
         }, 0);
@@ -37,7 +37,7 @@ export function useDashboardData() {
         const invoices = state.storage.value.invoices;
         const amount = Object.keys(invoices).reduce((acc, item) => {
             if (invoices[item].status === Status.Draft) {
-                return acc + invoices[item].total
+                return acc + invoices[item].totalAmount
             }
             return acc;
         }, 0);

@@ -30,7 +30,10 @@
 
 import Card from '../components/shared/Card.vue';
 import { useDashboardData } from '../composables/useDashboardData';
+import invoiceService from '../services/invoiceService';
 import Invoices from './Invoices.vue';
 
-const { totalInvoiceAmount, totalPaid, totalDue, totalDrafted } = useDashboardData();
+const { totalInvoiceAmount, totalPaid, totalDue, totalDrafted, } = useDashboardData();
+
+
 </script>

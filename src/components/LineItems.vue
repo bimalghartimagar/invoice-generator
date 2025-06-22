@@ -16,6 +16,7 @@
           :item="item"
           :index="index"
           :hide-close="index === 0 && items.length <= 1"
+          :invoice-id="invoiceId"
           @update-item="updateItem"
           @close="removeItem"
         />
@@ -36,16 +37,17 @@ import CustomButton from "./CustomButton.vue";
 import { Invoice, InvoiceItem } from "../types/index.type";
 
 defineProps<{
-  items: Invoice[];
+  items: InvoiceItem[];
+  invoiceId: number;
 }>();
 const emits = defineEmits<{
   (event: "update-item", item: InvoiceItem, index: number): void
-  (event: "close", index: number): void
+  (event: "close", payload: any): void
   (event: "add-item"): void
 }>();
 
-function removeItem(index) {
-  emits("close", index)
+function removeItem(payload) {
+  emits("close", payload)
 }
 
 function updateItem(item: InvoiceItem, index: number) {
